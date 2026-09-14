@@ -19,3 +19,19 @@ _Avoid_: fact, statement, assertion, 주장, 사실
 **description**:
 digest 앞머리에 붙는 짧은 글로, 새 source 가 이 digest 를 열어 봐야 하는지를 정하는 데 쓰인다.
 _Avoid_: abstract, 요약
+
+**ingest**:
+새 source 한 편을 저장소에 넣는 한 바퀴. 긁어 오기, digest 쓰기, 쌓인 digest 와 견주기, 검사까지가 한 바퀴다.
+_Avoid_: 넣기, 추가, 수집
+
+**screening**:
+ingest 의 첫 단계. 새 source 를 앞서 쌓인 digest 의 description 만 보고, digest 마다 open 또는 skip 을 이유와 함께 낸다. 본문은 열지 않는다. 결과는 새 digest 안에 digest 마다 한 줄로 남는다.
+_Avoid_: 판정(사람이 충돌에 내리는 답에 남겨 둔다), 거르기, 1차 견줌
+
+**comparison**:
+ingest 의 둘째 단계. screening 이 open 으로 낸 digest 만 본문을 열어, 새 digest 의 claim 과 그 digest 의 claim 을 쌍으로 놓고 conflict, overlap, unrelated 중 하나를 낸다. 결과는 새 digest 안에 열어 본 digest 마다 한 줄로 남는다.
+_Avoid_: 판정, diff, 2차 견줌
+
+**coverage**:
+검사가 확인하는 성질. screening 줄이 앞서 쌓인 digest 전부를 이름으로 빠짐없이 덮고, comparison 줄이 open 된 digest 전부를 덮으며, 줄마다 붙인 인용이 그 description 이나 본문에 글자 그대로 있는 것. 행위가 아니라 스크립트가 확인하는 성질이다.
+_Avoid_: 완전성, 다 봤음
