@@ -17,7 +17,7 @@ digest 의 알갱이. 내 말 한 줄과 source 인용 한 토막이 붙고, dig
 _Avoid_: fact, statement, assertion, 주장, 사실
 
 **description**:
-digest 앞머리에 붙는 짧은 글로, 새 source 가 이 digest 를 열어 봐야 하는지를 정하는 데 쓰인다.
+digest 앞머리에 붙는 짧은 글로, 새 source 가 이 digest 를 열어 봐야 하는지를 정하는 데 쓰인다. source 파일 머리에도 같은 이름의 필드가 있으나 그것은 긁어 온 도구가 적은 사이트 설명이고, 이 용어는 digest 의 것만 가리킨다.
 _Avoid_: abstract, 요약
 
 **ingest**:

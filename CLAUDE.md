@@ -15,3 +15,7 @@ The five default triage labels, each label string equal to its role name. See `d
 ### Domain docs
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Storage layout
+
+`source/`, `digest/`, `conflict/` at the repo root, one digest per source under the same name. Digest grammar and the checks it must pass: `docs/agents/digest-format.md`.
