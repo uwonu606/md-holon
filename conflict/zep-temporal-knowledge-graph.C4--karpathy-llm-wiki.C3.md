@@ -20,6 +20,7 @@ status: open
 | digest/zep-temporal-knowledge-graph.md | C4 | claim | | |
 | digest/zep-temporal-knowledge-graph.md | Comparison 행 karpathy-llm-wiki | conflict C4↔C3 | | |
 | digest/karpathy-llm-wiki.md | C3 | claim | | |
+| digest/letta-memory-blocks.md | Comparison 행 zep-temporal-knowledge-graph | overlap C6↔C4 | | |
 
 ## 의견
 
