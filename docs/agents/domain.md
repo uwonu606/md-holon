@@ -1,51 +1,22 @@
-# Domain Docs
+# Domain docs
 
-How the engineering skills should consume this repo's domain documentation when exploring the codebase.
+코드를 살피기 전에 읽는 것과, 읽은 뒤 말을 맞추는 법.
 
-## Before exploring, read these
+## 살피기 전에 읽는다
 
-- **`CONTEXT.md`** at the repo root, or
-- **`CONTEXT-MAP.md`** at the repo root if it exists: it points at one `CONTEXT.md` per context. Read each one relevant to the topic.
-- **`docs/adr/`**: read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
+- 저장소 루트의 **`CONTEXT.md`**: 용어집.
+- **`docs/adr/`**: 손댈 영역에 걸린 ADR.
 
-If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates them lazily when terms or decisions actually get resolved.
+없으면 그냥 지나간다. 없다고 알리거나 먼저 만들자고 하지 않는다. `/domain-modeling` 이 용어나 결정이 실제로 굳을 때 만든다. context 가 여럿인 저장소는 루트에 `CONTEXT-MAP.md` 가 있고 context 마다 `CONTEXT.md` 와 `docs/adr/` 를 갖는데, 이 저장소는 context 하나다.
 
-## File structure
+## 용어집의 말을 쓴다
 
-Single-context repo (most repos):
+내는 것(issue 제목, refactor 제안, 가설, 테스트 이름)이 도메인 개념을 부를 때 `CONTEXT.md` 에 정한 용어를 쓴다. 용어집이 _Avoid_ 로 적은 동의어는 쓰지 않는다.
 
-```
-/
-├── CONTEXT.md
-├── docs/adr/
-│   ├── 0001-event-sourced-orders.md
-│   └── 0002-postgres-for-write-model.md
-└── src/
-```
+필요한 개념이 용어집에 없으면 신호다. 프로젝트가 안 쓰는 말을 만들고 있거나(다시 생각한다), 진짜 빈 자리다(`/domain-modeling` 을 위해 적어 둔다).
 
-Multi-context repo (presence of `CONTEXT-MAP.md` at the root):
+## ADR 과 부딪히면 드러낸다
 
-```
-/
-├── CONTEXT-MAP.md
-├── docs/adr/                          ← system-wide decisions
-└── src/
-    ├── ordering/
-    │   ├── CONTEXT.md
-    │   └── docs/adr/                  ← context-specific decisions
-    └── billing/
-        ├── CONTEXT.md
-        └── docs/adr/
-```
+내는 것이 ADR 과 어긋나면 조용히 덮지 않고 밝힌다.
 
-## Use the glossary's vocabulary
-
-When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
-
-If the concept you need isn't in the glossary yet, that's a signal: either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/domain-modeling`).
-
-## Flag ADR conflicts
-
-If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
-
-> _Contradicts ADR-0007 (event-sourced orders), but worth reopening because…_
+> _ADR-0007(event-sourced orders)과 어긋나지만 다시 열 만하다. 왜냐하면…_
