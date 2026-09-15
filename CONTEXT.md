@@ -35,3 +35,11 @@ _Avoid_: 판정, diff, 2차 견줌
 **coverage**:
 검사가 확인하는 성질. screening 줄이 앞서 쌓인 digest 전부를 이름으로 빠짐없이 덮고, comparison 줄이 open 된 digest 전부를 덮으며, 줄마다 붙인 인용이 그 description 이나 본문에 글자 그대로 있는 것. 행위가 아니라 스크립트가 확인하는 성질이다.
 _Avoid_: 완전성, 다 봤음
+
+**conflict**:
+comparison 이 conflict 로 낸 claim 한 쌍. 쌍마다 md 한 장이 서고, 거기에 두 쪽의 인용과 걸린 자리, 사람이 쓰는 의견, 정한 뒤의 결과가 적힌다. 정해져도 장은 남는다.
+_Avoid_: 충돌, contradiction, issue
+
+**stance**:
+conflict 한 쌍에 사람이 낸 편. conflict 장에 살고, 두 digest 의 머리가 그 장과 편을 한 줄로 가리킨다. claim 은 원문의 말이라 stance 가 나도 바뀌지 않는다.
+_Avoid_: verdict(screening 과 comparison 이 내는 판정), decision, 입장, 의견
