@@ -277,7 +277,10 @@ for (const page of actualPages) {
       if (reason === "") fail(file, `걸린 자리 ${key}: reason is empty`);
     }
   }
-  for (const k of expected) if (!got.has(k)) fail(file, `걸린 자리 missing row: | ${k.replaceAll("|", " | ")} |`);
+  // an open page must list every derived row; a decided page is frozen, so rows derived
+  // after it was decided (a later page or comparison row naming the same claim) live on
+  // the later page, and here only bogus rows fail.
+  if (fields.status === "open") for (const k of expected) if (!got.has(k)) fail(file, `걸린 자리 missing row: | ${k.replaceAll("|", " | ")} |`);
   for (const k of got) if (!expected.has(k)) fail(file, `걸린 자리 row not derived from ids: | ${k.replaceAll("|", " | ")} |`);
 
   // 의견 / 결과 / status
