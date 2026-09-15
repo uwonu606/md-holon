@@ -15,13 +15,11 @@ status: open
 
 ## 걸린 자리
 
-| 파일 | 자리 | 무엇 |
-|---|---|---|
-| digest/zep-temporal-knowledge-graph.md | C4 | claim |
-| digest/zep-temporal-knowledge-graph.md | description "충돌 처리:" 줄 | 편을 적은 줄 |
-| digest/zep-temporal-knowledge-graph.md | Comparison 행 karpathy-llm-wiki | conflict C4↔C3 |
-| digest/karpathy-llm-wiki.md | C3 | claim |
-| digest/karpathy-llm-wiki.md | description "충돌 처리:" 줄 | 편을 적은 줄 |
+| 파일 | 자리 | 무엇 | action | reason |
+|---|---|---|---|---|
+| digest/zep-temporal-knowledge-graph.md | C4 | claim | | |
+| digest/zep-temporal-knowledge-graph.md | Comparison 행 karpathy-llm-wiki | conflict C4↔C3 | | |
+| digest/karpathy-llm-wiki.md | C3 | claim | | |
 
 ## 의견
 
@@ -29,4 +27,4 @@ status: open
 
 ## 결과
 
-<!-- 정한 뒤 세션이 적는다. 첫 줄은 날짜와 편, 그 아래 걸린 자리마다 한 것. -->
+<!-- 정한 뒤 세션이 적는다. 날짜와 편 한 줄. 자리마다 한 것은 걸린 자리 표의 action, reason 에. -->
