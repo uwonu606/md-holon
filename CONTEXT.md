@@ -17,7 +17,7 @@ digest 의 알갱이. 내 말 한 줄과 source 인용 한 토막이 붙고, dig
 _Avoid_: fact, statement, assertion, 주장, 사실
 
 **ingest**:
-새 source 한 편을 저장소에 넣는 한 바퀴. 긁어 오기, digest 쓰기, 쌓인 digest 전부와 견주기, 검사까지가 한 바퀴다. conflict 장은 이 바퀴 안에서 서고, 바퀴는 거기서 멈춰 사람을 기다린다.
+새 source 한 편을 저장소에 넣는 일 전체. 긁어 오기, digest 쓰기, 쌓인 digest 전부와 견주기, 검사까지다. conflict 장은 이 안에서 서고, 거기서 멈춰 사람을 기다린다.
 _Avoid_: 넣기, 추가, 수집
 
 **comparison**:
@@ -37,5 +37,5 @@ conflict 한 쌍에 사람이 낸 편. conflict 장에 살고, 두 claim 의 바
 _Avoid_: verdict(comparison 이 내는 판정), decision, 입장, 의견
 
 **decide**:
-사람이 conflict 장에 의견을 쓴 뒤 세션이 도는 짧은 바퀴. 걸린 자리마다 무엇을 했는지 적고, 장을 닫고, 두 claim 밑에 stance 를 더한다. ingest 밖에서 따로 돈다.
+사람이 conflict 장에 의견을 쓴 뒤 세션이 하는 일 전체. 걸린 자리마다 무엇을 했는지 적고, 장을 닫고, 두 claim 밑에 stance 를 더한다. ingest 밖에서 따로 한다.
 _Avoid_: 반영, 전파, 적용
