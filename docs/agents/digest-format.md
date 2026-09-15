@@ -8,7 +8,7 @@ Terms (source, digest, claim, ingest, comparison, coverage, conflict, stance, de
 source/<name>.md     defuddle output, byte for byte. Never edited.
 digest/<name>.md     one per source, same <name>. Written by the ingest session.
 conflict/<new>.C<n>--<old>.C<m>.md   one per conflict pair; see Conflict page.
-scripts/check.mjs    the check script. scripts/pre-commit runs it.
+scripts/check.mjs    the check script. .githooks/pre-commit runs it before every commit (the machine-wide hook dispatcher calls <repo>/.githooks/<name>).
 .claude/skills/ingest/SKILL.md
 .claude/skills/decide/SKILL.md
 ```

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Runs the check script before every commit. Dispatched by the machine-wide hook
+# (core.hooksPath → ~/.git-hooks/lib/dispatch), which calls <repo>/.githooks/<name>.
+exec node "$(git rev-parse --show-toplevel)/scripts/check.mjs"
