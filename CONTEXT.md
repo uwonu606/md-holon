@@ -33,9 +33,9 @@ comparison 이 conflict 로 낸 claim 한 쌍. 쌍마다 md 한 장이 서고, �
 _Avoid_: 충돌, contradiction, issue
 
 **stance**:
-conflict 한 쌍에 사람이 낸 편. conflict 장에 살고, 두 digest 의 머리가 그 장과 편을 한 줄로 가리킨다. 더해지기만 하고 고쳐지거나 지워지지 않는다. 같은 claim 에 반대편 stance 가 둘 쌓일 수 있고 나중 것이 뒤집은 것이다. claim 은 원문의 말이라 stance 가 나도 바뀌지 않는다.
+conflict 한 쌍에 사람이 낸 편. conflict 장에 살고, 두 claim 의 바로 밑에 진 쪽은 이긴 claim 을, 이긴 쪽은 진 claim 을 그 장과 함께 한 줄로 가리킨다. 더해지기만 하고 고쳐지거나 지워지지 않는다. 같은 claim 밑에 줄이 여럿 쌓이면 마지막 줄이 지금 편이다. claim 은 원문의 말이라 stance 가 나도 바뀌지 않고, 진 claim 은 여전히 그 글이 한 말이지만 이 저장소의 생각으로는 쓰지 않는다.
 _Avoid_: verdict(comparison 이 내는 판정), decision, 입장, 의견
 
 **decide**:
-사람이 conflict 장에 의견을 쓴 뒤 세션이 도는 짧은 바퀴. 걸린 자리마다 무엇을 했는지 적고, 장을 닫고, 두 digest 머리에 stance 를 더한다. ingest 밖에서 따로 돈다.
+사람이 conflict 장에 의견을 쓴 뒤 세션이 도는 짧은 바퀴. 걸린 자리마다 무엇을 했는지 적고, 장을 닫고, 두 claim 밑에 stance 를 더한다. ingest 밖에서 따로 돈다.
 _Avoid_: 반영, 전파, 적용
