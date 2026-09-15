@@ -1,10 +1,5 @@
 ---
 fetched: 2026-09-15
-description: |
-  충돌 처리: 새 edge 가 옛 edge 와 부딪히는지 LLM 이 찾고, 부딪히면 옛 edge 를 자동으로 무효화하며 새 정보를 우선한다. 사람이 끼지 않는다.
-  저장: 원문은 episode 로 그대로 두고, 그 위에 entity 와 edge 의 graph 를 둔다.
-  찾기: entity 를 1024차원 vector 로 embedding 해 cosine 유사도, full-text, breadth-first 셋을 섞는다.
-  원문: episode 는 손실 없이 그대로 둔다.
 ---
 
 ## Claims
@@ -21,12 +16,6 @@ description: |
   > the system embeds each entity name into a 1024-dimensional vector space
 - C6: 찾기는 cosine, full-text, breadth-first 셋을 쓴다.
   > Zep implements three search functions
-
-## Screening
-
-| digest | verdict | reason | quote | hash |
-|---|---|---|---|---|
-| karpathy-llm-wiki | open | 충돌 처리와 저장 둘 다에서 편이 갈린다 | 자동으로 한쪽을 고르지 않는다 | 52f018d5 |
 
 ## Comparison
 

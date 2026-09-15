@@ -1,10 +1,5 @@
 ---
 fetched: 2026-09-15
-description: |
-  충돌 처리: 새 자료가 옛 주장과 부딪히면 LLM 이 적어 두고, lint 때 사람이 본다. 자동으로 한쪽을 고르지 않는다.
-  저장: markdown 파일 디렉토리와 index.md. graph db 나 embedding 을 두지 않는다.
-  찾기: 소스 100편쯤까지는 index.md 를 먼저 읽고 내려가는 것으로 충분하고, 그 뒤에 로컬 검색기를 붙인다.
-  원문: 읽기만 하고 고치지 않는다.
 ---
 
 ## Claims
@@ -21,11 +16,6 @@ description: |
   > This works surprisingly well at moderate scale (~100 sources, ~hundreds of pages) and avoids the need for embedding-based RAG infrastructure.
 - C6: 사람이 한 편씩 넣으며 관여하는 쪽을 택한다.
   > Personally I prefer to ingest sources one at a time and stay involved
-
-## Screening
-
-| digest | verdict | reason | quote | hash |
-|---|---|---|---|---|
 
 ## Comparison
 
