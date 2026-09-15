@@ -1,56 +1,56 @@
 ---
 name: ingest
-description: Ingest one URL into md-holon: fetch the source, write its digest, compare it against every earlier digest, open conflict pages, pass the check, commit.
+description: URL 하나를 md-holon 에 넣는다. source 를 긁어 오고, digest 를 쓰고, 앞선 digest 전부와 견주고, conflict 장을 세우고, 검사를 통과해 커밋한다.
 disable-model-invocation: true
 ---
 
-Ingest one source: `/ingest <url>`. Terms are in `CONTEXT.md`; the file grammar is `docs/agents/digest-format.md`. Read both first. The check script `scripts/check.mjs` is the judge of every step below; run it whenever you are unsure what a rule means, and read its failure lines as the instruction.
+source 하나를 넣는다: `/ingest <url>`. 용어는 `CONTEXT.md`, 파일 문법은 `docs/agents/digest-format.md` 에 있다. 둘을 먼저 읽는다. 아래 모든 단계의 판정자는 검사 스크립트 `scripts/check.mjs` 다. 규칙이 무슨 뜻인지 흔들릴 때마다 돌리고, 실패 줄을 지시로 읽는다.
 
-## 1. Fetch the source
+## 1. source 를 긁어 온다
 
-Pick `<name>`: kebab-case, from the page title, unique under `source/`. Then:
+`<name>` 을 고른다. kebab-case, 페이지 제목에서, `source/` 안에서 유일하게. 그리고:
 
 ```bash
 npx defuddle parse <url> --markdown --frontmatter > source/<name>.md
 ```
 
-If `source/<name>.md` already exists, use it as is. A source is read-only from the moment it lands: never edit it, even to fix a typo.
+`source/<name>.md` 가 이미 있으면 그대로 쓴다. source 는 놓이는 순간부터 읽기만 한다. 오타를 고치려고도 손대지 않는다.
 
-**Done when** `source/<name>.md` exists and its frontmatter carries `source: <url>`.
+**완료 기준**: `source/<name>.md` 가 있고 frontmatter 에 `source: <url>` 이 있다.
 
-## 2. Write the digest
+## 2. digest 를 쓴다
 
-Read the whole source. Write `digest/<name>.md`:
+source 를 끝까지 읽는다. `digest/<name>.md` 를 쓴다:
 
-- `fetched` is today's ISO date, the only frontmatter key.
-- Six claims or so: what the source asserts that a later source could agree with or contradict. Skip API mechanics and examples. The claim line is your one sentence in Korean; the excerpt under it is one line copied verbatim from the source, with no `|` in it.
-- The `## Comparison` section with its header row, even if no earlier digest exists.
+- `fetched` 는 오늘의 ISO 날짜이고 frontmatter 의 유일한 key 다.
+- claim 은 여섯쯤. source 가 주장하는 것 중 나중 글이 동의하거나 부딪힐 수 있는 것이다. API 사용법과 예시는 건너뛴다. claim 줄은 내 말 한 문장이고, 그 밑의 인용은 source 에서 글자 그대로 옮긴 한 줄이며 `|` 가 없다.
+- `## Comparison` 절과 표 머리. 앞선 digest 가 없어도 둔다.
 
-**Done when** `node scripts/check.mjs` reports nothing about `digest/<name>.md` except missing comparison rows.
+**완료 기준**: `node scripts/check.mjs` 가 `digest/<name>.md` 에 대해 comparison 행이 없다는 것 말고는 아무것도 찍지 않는다.
 
-## 3. Compare against every earlier digest
+## 3. 앞선 digest 전부와 견준다
 
-For each file in `digest/` other than the new one:
+`digest/` 안의 새 것이 아닌 파일마다:
 
-1. Read its whole body. Also `grep -l <its-name> conflict/` and read every page with `status: open`: those claims are under dispute and carry no stance line yet.
-2. Pair claims: `conflict` when the two cannot both hold, `overlap` when they say the same thing. Skip pairing with a claim whose last `stance` line is `lost to`; that claim is not this repo's view.
-3. Add one row: the digest name, the strongest kind as verdict (`unrelated` when there are no pairs), the pairs with the new claim on the left, and a quote copied verbatim from that digest's body.
+1. 본문을 끝까지 읽는다. `grep -l <그-이름> conflict/` 도 하고 `status: open` 인 장을 전부 읽는다. 그 claim 들은 다투는 중이고 아직 stance 줄이 없다.
+2. claim 을 짝짓는다. 둘이 같이 설 수 없으면 `conflict`, 같은 말이면 `overlap`. 마지막 `stance` 줄이 `lost to` 인 claim 과는 짝짓지 않는다. 그 claim 은 이 저장소의 생각이 아니다.
+3. 행 하나를 더한다. digest 이름, 가장 센 kind 를 verdict 로(짝이 없으면 `unrelated`), 새 claim 을 왼쪽에 둔 pairs, 그 digest 본문에서 글자 그대로 옮긴 quote.
 
-**Done when** every earlier digest has exactly one row.
+**완료 기준**: 앞선 digest 마다 행이 정확히 하나 있다.
 
-## 4. Open conflict pages and extend open ones
+## 4. conflict 장을 세우고 open 장을 늘린다
 
-- For every `conflict` pair, create `conflict/<name>.C<n>--<old>.C<m>.md` from the template in `docs/agents/digest-format.md`, `status: open`, 의견 and 결과 left to their comments.
-- Run the check. It prints every 걸린 자리 row it derives and cannot find, on new pages and on earlier `open` pages that name a claim your rows now touch. Add each printed row verbatim with empty `action` and `reason`. Never add a row the check did not print.
+- `conflict` 쌍마다 `docs/agents/digest-format.md` 의 틀로 `conflict/<name>.C<n>--<old>.C<m>.md` 를 만든다. `status: open`, 의견과 결과는 주석 그대로 둔다.
+- 검사를 돌린다. 검사는 뽑았는데 못 찾은 걸린 자리 행을 전부 찍는다. 새 장의 행과, 이번 행이 건드린 claim 을 이름 부른 앞선 `open` 장의 행이다. 찍힌 행을 `action` 과 `reason` 을 비운 채 글자 그대로 더한다. 검사가 찍지 않은 행은 더하지 않는다.
 
-**Done when** `node scripts/check.mjs` prints `ok`.
+**완료 기준**: `node scripts/check.mjs` 가 `ok` 를 찍는다.
 
-## 5. Commit and report
+## 5. 커밋하고 보고한다
 
-Commit `source/`, `digest/` and `conflict/` in one commit; the pre-commit hook runs the check again. Then report:
+`source/`, `digest/`, `conflict/` 를 한 커밋으로 묶는다. pre-commit hook 이 검사를 다시 돌린다. 그리고 보고한다:
 
-- how many earlier digests there were,
-- `wc -m` over the source and every earlier digest, summed (what one session had to read),
-- which conflict pages are open. A conflict pair stops here: the human writes 의견 on the page and runs `/decide`.
+- 앞선 digest 가 몇이었는지,
+- source 와 앞선 digest 전부의 `wc -m` 합(한 세션이 읽어야 했던 양),
+- 어느 conflict 장이 open 인지. conflict 쌍은 여기서 멈춘다. 사람이 장에 의견을 쓰고 `/decide` 를 돌린다.
 
-**Done when** the commit exists and the report is posted.
+**완료 기준**: 커밋이 있고 보고를 올렸다.

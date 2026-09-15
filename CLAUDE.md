@@ -1,6 +1,6 @@
 ## 문서 언어
 
-언어는 읽는 쪽으로 정한다. 에이전트만 읽는 `docs/agents/*` 는 파일 전체를 영어로 쓴다. 사람이 읽는 문서(issue, `docs/research/`, `CONTEXT.md`)는 한글로 쓰되, 스킬이 정한 절 제목·label·고정 문구는 스킬에 적힌 영어 그대로 옮긴다. `CONTEXT.md` 의 용어 이름은 영어로 두고 설명만 한글로 쓴다. 코드와 문서가 같은 이름을 쓰기 위해서다.
+본문은 한글로 쓴다. 영어로 두는 것은 넷이다. `CONTEXT.md` 의 용어 이름(digest, claim, stance), 명령과 파일 경로, 스크립트가 찍는 문구, 스킬이 정한 절 제목·label·고정 문구다. 코드와 문서와 검사 출력이 같은 이름을 쓰기 위해서다. 바깥 스킬 설치가 놓은 `docs/agents/issue-tracker.md`, `triage-labels.md`, `domain.md` 는 그 틀대로 영어로 둔다.
 
 ## Agent skills
 
