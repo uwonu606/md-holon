@@ -10,10 +10,12 @@ fetched: 2026-09-15
   > The system employs an LLM to compare new edges against semantically related existing edges to identify potential contradictions.
 - C3: 부딪히면 옛 edge 의 t_invalid 를 자동으로 찍는다.
   > it invalidates the affected edges by setting their $t_{\text{invalid}}$ to the $t_{\text{valid}}$ of the invalidating edge
+  stance: won over karpathy-llm-wiki#C2 · zep-temporal-knowledge-graph.C3--karpathy-llm-wiki.C2
 - C4: 무효화할 때 새 정보를 늘 우선한다.
   > Graphiti consistently prioritizes new information when determining edge invalidation.
 - C5: entity 이름을 1024차원 vector 로 embedding 해 cosine 유사도로 찾는다.
   > the system embeds each entity name into a 1024-dimensional vector space
+  stance: lost to karpathy-llm-wiki#C5 · zep-temporal-knowledge-graph.C5--karpathy-llm-wiki.C5
 - C6: 찾기는 cosine, full-text, breadth-first 셋을 쓴다.
   > Zep implements three search functions
 
