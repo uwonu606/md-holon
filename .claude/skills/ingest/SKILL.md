@@ -1,6 +1,6 @@
 ---
 name: ingest
-description: URL 하나를 md-holon 에 넣는다. source 를 긁어 오고, digest 를 쓰고, 앞선 digest 전부와 견주고, conflict 장을 세우고, 검사를 통과해 커밋한다.
+description: URL 하나를 md-holon 에 넣는다. source 를 긁어 오고, digest 를 쓰고, 앞선 digest 전부와 견주고, conflict 장을 세워 편을 내고, 검사를 통과해 커밋한다.
 disable-model-invocation: true
 ---
 
@@ -34,11 +34,13 @@ source 를 끝까지 읽고 `digest/<name>.md` 를 쓴다. claim 은 여섯쯤�
 
 **완료 기준**: 앞선 digest 마다 행이 정확히 하나 있다.
 
-## 4. conflict 장을 세우고 open 장을 늘린다
+## 4. conflict 장을 세우고 편을 낸다
 
-`conflict` 쌍마다 문법의 틀로 장을 만들고 `status: open` 으로 둔다. 검사를 돌리면 "걸린 자리 missing row" 로 뽑았는데 없는 행을 전부 찍는다. 새 장의 행과, 이번 행이 건드린 claim 을 이름 부른 앞선 `open` 장의 행이다. 찍힌 행을 `action` 과 `reason` 을 비운 채 글자 그대로 더한다. 표의 행은 검사가 찍은 것만으로 채운다.
+`conflict` 쌍마다 문법의 틀로 장을 만들고 `status: open` 으로 둔다. 풀이 절은 이때 쓴다. 검사를 돌리면 "걸린 자리 missing row" 로 뽑았는데 없는 행을 전부 찍는다. 새 장의 행과, 이번 행이 건드린 claim 을 이름 부른 앞선 `open` 장의 행이다. 찍힌 행을 `action` 과 `reason` 을 비운 채 글자 그대로 더한다. 표의 행은 검사가 찍은 것만으로 채운다.
 
-**완료 기준**: `node scripts/check.mjs` 가 `ok` 를 찍는다.
+검사가 `ok` 를 찍으면 `.claude/skills/decide/SKILL.md` 를 읽고 그대로 따른다. 이 세션이 이어서 하고 subagent 는 안 띄운다. 새 장과, 행이 자란 앞선 open 장이 대상이다.
+
+**완료 기준**: `node scripts/check.mjs` 가 `ok` 를 찍고, 대상 장마다 `decided` 이거나 의견에 왜 못 냈는지가 적혀 있다.
 
 ## 5. 커밋하고 보고한다
 
@@ -46,6 +48,6 @@ source 를 끝까지 읽고 `digest/<name>.md` 를 쓴다. claim 은 여섯쯤�
 
 - 앞선 digest 수,
 - source 와 앞선 digest 전부의 `wc -m` 합(한 세션이 읽어야 했던 양),
-- open 인 conflict 장. conflict 쌍은 여기서 멈춘다. 사람이 장에 의견을 쓰고 `/decide` 를 돌린다.
+- 정한 장과 편, open 으로 남은 장과 못 낸 이유. open 목록은 검사의 `ok` 줄이 찍는다. 사람은 장을 읽고 뒤집을 수 있다.
 
 **완료 기준**: 커밋이 있고 보고를 올렸다.
