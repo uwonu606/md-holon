@@ -9,6 +9,8 @@ source/<name>.md     defuddle 출력 그대로. 고치지 않는다.
 digest/<name>.md     source 하나에 하나, 같은 <name>. ingest 세션이 쓴다.
 conflict/<new>.C<n>--<old>.C<m>.md   conflict 쌍 하나에 하나. 아래 conflict 장.
 scripts/check.mjs    검사 스크립트. `node scripts/check.mjs [<dir>]`. <dir> 이 없으면 이 저장소. .githooks/pre-commit 이 커밋마다 돌린다(기계 전체 hook dispatcher 가 <repo>/.githooks/<name> 을 부른다).
+scripts/check.test.mjs   검사 스크립트의 깨뜨림 테스트. fixture 를 복사해 한 군데씩 깨고 그 실패 줄을 기대한다. check.mjs 를 고쳤으면 `node --test scripts/check.test.mjs`.
+scripts/fixture/     테스트의 바탕. 문법을 다 갖춘 최소 저장소(source/digest/conflict). 문법이 바뀌면 같이 고친다.
 .claude/skills/ingest/SKILL.md
 .claude/skills/decide/SKILL.md
 ```
