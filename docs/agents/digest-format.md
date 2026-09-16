@@ -8,7 +8,7 @@
 source/<name>.md     defuddle 출력 그대로. 고치지 않는다.
 digest/<name>.md     source 하나에 하나, 같은 <name>. ingest 세션이 쓴다.
 conflict/<new>.C<n>--<old>.C<m>.md   conflict 쌍 하나에 하나. 아래 conflict 장.
-scripts/check.mjs    검사 스크립트. .githooks/pre-commit 이 커밋마다 돌린다(기계 전체 hook dispatcher 가 <repo>/.githooks/<name> 을 부른다).
+scripts/check.mjs    검사 스크립트. `node scripts/check.mjs [<dir>]`. <dir> 이 없으면 이 저장소. .githooks/pre-commit 이 커밋마다 돌린다(기계 전체 hook dispatcher 가 <repo>/.githooks/<name> 을 부른다).
 .claude/skills/ingest/SKILL.md
 .claude/skills/decide/SKILL.md
 ```

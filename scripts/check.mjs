@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 // The check script. Reads the whole repo every time, prints every failure, exits 1 on any.
 // Grammar: docs/agents/digest-format.md. Terms: CONTEXT.md.
+// Usage: node check.mjs [<dir>]. <dir> holds source/, digest/, conflict/; default is this repo.
 import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const root = process.argv[2] ? resolve(process.argv[2]) : join(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
 const fail = (file, why) => failures.push(`${file}: ${why}`);
 
