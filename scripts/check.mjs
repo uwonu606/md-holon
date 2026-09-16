@@ -227,9 +227,12 @@ const pages = new Map(); // page → { status, opened, pair }
 for (const page of actualPages) {
   const file = `conflict/${page}.md`;
   const text = read(file);
-  const { fields, body } = splitFront(text, file);
+  const { fields, keys, body } = splitFront(text, file);
   if (!ISO_DATE.test(fields.opened ?? "")) fail(file, "opened must be an ISO date");
   if (!["open", "decided"].includes(fields.status ?? "")) fail(file, "status must be open or decided");
+  for (const k of keys) if (!["opened", "status", "decided_by"].includes(k)) fail(file, `frontmatter key not allowed: ${k}`);
+  if (fields.status === "open" && "decided_by" in fields) fail(file, "open page must not have decided_by");
+  if (fields.status === "decided" && !(fields.decided_by ?? "")) fail(file, "decided page needs decided_by: ai or a person's name");
   const pair = expectedPages.get(page);
   pages.set(page, { status: fields.status, opened: fields.opened, pair });
   if (!pair) continue;
@@ -286,10 +289,7 @@ for (const page of actualPages) {
   // 의견 / 결과 / status
   const opinion = sectionText(secs.get("의견") ?? []);
   const result = sectionText(secs.get("결과") ?? []);
-  if (fields.status === "open") {
-    if (opinion !== "") fail(file, "의견 is written but status is still open: run decide");
-    if (result !== "") fail(file, "결과 is written but status is open");
-  }
+  if (fields.status === "open" && result !== "") fail(file, "결과 is written but status is open");
   if (fields.status === "decided") {
     if (opinion === "") fail(file, "decided without 의견");
     if (result === "") fail(file, "decided without 결과");
@@ -338,4 +338,5 @@ if (failures.length) {
   console.error(`\n${failures.length} failure(s)`);
   process.exit(1);
 }
-console.log(`ok: ${digests.size} digest(s), ${actualPages.size} conflict page(s)`);
+const open = [...pages].filter(([, p]) => p.status === "open").map(([n]) => n).sort();
+console.log(`ok: ${digests.size} digest(s), ${actualPages.size} conflict page(s), ${open.length} open${open.length ? ": " + open.join(", ") : ""}`);

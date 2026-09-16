@@ -55,6 +55,7 @@ comparison 행의 `conflict` 쌍 하나에 파일 하나이고, 이름은 `<new>
 ---
 opened: 2026-09-15
 status: open | decided
+decided_by: ai
 ---
 
 # <new>#C<n> ↔ <old>#C<m>
@@ -70,6 +71,10 @@ status: open | decided
 <!-- 두 claim 중 하나를 이름 부른 앞선 decided 장마다 한 줄: -->
 <name>#C<n> 은 <conflict 파일 이름> 에서 <side> 편 (<그 장의 opened 날짜>)
 
+## 풀이
+
+<!-- 장을 세우는 세션이 한글로 쓴다. 두 쪽이 각각 무엇을 말하고 어디서 갈리는지. 검사는 안 본다. -->
+
 ## 걸린 자리
 
 | 파일 | 자리 | 무엇 | action | reason |
@@ -80,7 +85,7 @@ status: open | decided
 
 ## 의견
 
-<!-- 사람이 쓴다. 어느 쪽인지, 왜인지. -->
+<!-- decide 세션이 쓴다. 어느 쪽인지, 어느 기준에서 갈렸는지. open 이면 왜 못 냈는지. -->
 
 ## 결과
 
@@ -90,15 +95,17 @@ status: open | decided
 규칙:
 
 - 절 제목과 표 머리는 고정 문구이고 한글이다. 사람이 이 파일을 읽고 쓰기 때문이다. 뒤의 두 열 이름은 영어다. 검사 스크립트와 사람이 한 낱말을 읽기 위해서다.
-- 두 쪽은 각 claim 의 줄과 인용을 digest 에서 글자 그대로 되풀이한다. 그 밑에, 두 claim 중 하나를 이름 부른 앞선 `decided` 장마다 한 줄을 둔다. 읽는 사람이 의견을 쓰기 전에 앞선 stance 를 보게 하기 위해서다. 이미 stance 를 가진 claim 이라도 새 conflict 마다 장은 다시 선다.
+- 머리는 `opened`, `status`, `decided_by` 다. `decided_by` 는 `decided` 장에 있어야 하고(`ai` 또는 사람 이름) `open` 장에 있으면 실패다. 누가 편을 냈는지가 장에 남고, 나중에 사람이 정해도 자리는 같다.
+- 풀이는 장을 세우는 세션이 한글로 쓴다. 검사는 안 본다. 사람이 뒤집으려 읽을 때 영어 인용만으로는 부족해서다.
+- 두 쪽은 각 claim 의 줄과 인용을 digest 에서 글자 그대로 되풀이한다. 그 밑에, 두 claim 중 하나를 이름 부른 앞선 `decided` 장마다 한 줄을 둔다. 편을 내기 전에 앞선 stance 를 보게 하기 위해서다. 이미 stance 를 가진 claim 이라도 새 conflict 마다 장은 다시 선다.
 - 걸린 자리는 검사 스크립트가 id 만으로 뽑는다. 두 쪽 중 하나의 `<name>#C<n>` 을 이름 부른 모든 claim 줄, 모든 comparison 행, 모든 다른 conflict 장이다. 앞의 세 열은 스크립트의 것이고, `open` 장의 행이 뽑은 집합과 다르면 실패다. `decided` 장은 얼린다. 나중에 뽑히게 된 행(같은 claim 을 이름 부른 나중 장이나 comparison 행)은 그 나중 장에 적히고, decided 장은 어떤 id 로도 안 뽑히는 행이 있을 때만 실패한다. id 가 없는 자리는 적지 않는다.
-- `action` 과 `reason` 은 decide 세션이 행마다 채운다. `action` 은 `changed` 또는 `kept` 이고, `reason` 은 한 줄이며 비지 않는다. `open` 장에서는 둘 다 비어 있다.
-- 의견은 사람의 것이고 세션은 쓰지 않는다. `status` 가 아직 `open` 인데 의견이 찬 장은 검사에 실패한다. 쓴 의견을 잊지 못하게 하기 위해서다.
-- 결과는 의견 뒤에 decide 세션이 쓰고, 같은 편집에서 `status` 를 `decided` 로 바꾼다. 그 편집에서 세션은 두 claim 밑에 `stance` 줄도 하나씩 더한다. claim 줄과 인용은 고쳐 쓰거나 지우지 않는다. 밑의 stance 줄이 유일한 표시다.
+- `action` 과 `reason` 은 decide 세션이 행마다 채운다. `action` 은 이 decide 가 그 자리를 고쳤으면 `changed`, 그대로 두었으면 `kept` 다. stance 줄이 붙은 claim 행은 둘 다 `changed` 이고, comparison 행과 다른 장은 `kept` 다. `reason` 은 한 줄이며 비지 않는다. `open` 장에서는 둘 다 비어 있다.
+- 의견은 decide 세션이 쓴다. 편을 냈으면 어느 쪽이고 어느 기준에서 갈렸는지, 못 냈으면 왜 못 냈는지. `open` 장에 의견이 차 있는 것은 정상이다. 세 기준을 다 지나도 안 갈린 장이다.
+- 결과는 의견 뒤에 decide 세션이 쓰고, 같은 편집에서 `status` 를 `decided` 로 바꾸고 `decided_by` 를 단다. 그 편집에서 세션은 두 claim 밑에 `stance` 줄도 하나씩 더한다. claim 줄과 인용은 고쳐 쓰거나 지우지 않는다. 밑의 stance 줄이 유일한 표시다.
 - `decided` 장은 모든 `action` 과 `reason` 이 차 있고, 두 claim 밑에 그 장을 이름 부른 `stance` 줄이 있어야 한다(한쪽은 `lost`, 다른 쪽은 `won`). 장이 없거나 아직 `open` 인 `stance` 줄은 실패다.
-- 뒤집기: 사람이 앞선 decided 장과 반대 편을 들면 그 앞선 장은 고치지 않는다. 새 장의 걸린 자리에서 그 행은 `kept` 이고 reason 에 이 장이 그것을 뒤집는다고 적으며, 새 stance 줄은 claim 의 옛 줄 밑에 더한다.
+- 뒤집기: 나중 장이 앞선 decided 장과 반대 편을 내면 그 앞선 장은 고치지 않는다. 새 장의 걸린 자리에서 그 행은 `kept` 이고 reason 에 이 장이 그것을 뒤집는다고 적으며, 새 stance 줄은 claim 의 옛 줄 밑에 더한다.
 - quote 안의 `|` 는 표를 깨뜨린다. 다른 토막을 고른다.
 
 ## decide
 
-decide 스킬은 ingest 밖에서, 사람이 장 하나에 의견을 쓴 직후에 돈다. 한 번에 걸린 자리 모든 행의 `action` 과 `reason` 을 채우고, 결과를 쓰고, `status` 를 바꾸고, 두 claim 밑에 `stance` 줄을 더하고, 검사 스크립트를 돌린다. 파일은 커밋하지 않고 둔다. 사람이 diff 를 읽고 커밋한다.
+decide 스킬은 ingest 4단계가 장을 세운 자리에서 같은 세션이 읽어 따르고, `/decide` 로 따로도 돈다. 장마다 편의 기준을 순서대로 지난다. 저장소의 쓰임(`CONTEXT.md` 첫 줄)이 고르는 쪽, 안 갈리면 두 인용 중 더 분명하고 정답에 가까운 쪽, 그래도 안 갈리면 open. 편을 내면 걸린 자리 모든 행의 `action` 과 `reason` 을 채우고, 의견과 결과를 쓰고, `status` 와 `decided_by` 를 쓰고, 두 claim 밑에 `stance` 줄을 더한다. open 이면 의견에 왜 못 냈는지만 쓴다. 끝에 검사 스크립트를 돌린다. `ok` 줄이 open 장 이름을 같이 찍는다. 파일은 커밋하지 않고 둔다. 사람이 diff 를 읽고 커밋한다.
