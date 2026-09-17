@@ -17,7 +17,7 @@ digest 의 알갱이. 내 말 한 줄과 source 인용 한 토막이 붙고, dig
 _Avoid_: fact, statement, assertion, 주장, 사실
 
 **ingest**:
-새 source 한 편을 저장소에 넣는 일 전체. 긁어 오기, digest 쓰기, 쌓인 digest 전부와 견주기, 검사까지다. conflict 장은 이 안에서 서고 decide 까지 이 안에서 돈다. 편을 못 낸 장만 open 으로 남는다.
+새 source 한 편을 저장소에 넣는 일 전체. 긁어 오기, digest 쓰기, 쌓인 digest 전부와 견주기, 검사까지다. conflict 장은 이 안에서 서고 decide 까지 이 안에서 돈다. 편을 못 낸 장만 open 으로 남는다. fetch, digest, comparison, open, decide 다섯 step 을 잇는 flow 하나다.
 _Avoid_: 넣기, 추가, 수집
 
 **comparison**:
@@ -39,3 +39,19 @@ _Avoid_: verdict(comparison 이 내는 판정), decision, 입장, 의견
 **decide**:
 conflict 장 하나에 편을 내고 굳히는 일 전체. 세션이 낸다. 먼저 이 저장소의 쓰임이 고르는 쪽, 안 갈리면 두 인용 중 더 분명하고 정답에 가까운 쪽, 그래도 안 갈리면 편을 안 내고 open 으로 두며 왜 못 냈는지 적는다. 편을 내면 걸린 자리마다 무엇을 했는지 적고, 장을 닫고, 두 claim 밑에 stance 를 더한다. ingest 안에서 장이 서는 자리에서 돌고, 따로도 돈다.
 _Avoid_: 반영, 전파, 적용
+
+**step**:
+파일을 읽어 파일을 쓰는 한 칸. 읽는 것, 쓰는 것, 완료를 판정하는 gate 셋만 약속하고 속은 약속하지 않는다. 읽는 것이 다르면 다른 step 이고 하는 이(세션, 스크립트, 사람)가 다르면 다른 step 이다. 지금은 fetch, digest, comparison, open, decide 다섯이다.
+_Avoid_: stage, 단계 번호, phase
+
+**flow**:
+step 의 순서 목록. step 마다 부를 것 하나와 지날 gate 하나만 적고 판단은 step 에 둔다. 자리를 따로 적지 않고 파일에서 도로 센다. ingest 가 flow 하나다.
+_Avoid_: pipeline, orchestrator, loop(지도 하나가 목적지에 닿는 단위)
+
+**gate**:
+step 의 완료를 셀 수 있는 것만으로 판정하는 자리. 통과하면 다음 step 은 앞 step 의 속을 모른다. 덜 했다와 틀렸다를 가른다. 판단의 옳음은 보지 않고 사람이 읽고 뒤집는다.
+_Avoid_: check(그 한 구현인 스크립트), 테스트, 검증
+
+**open**:
+comparison 이 낸 conflict 쌍마다 장을 세우는 step. id 만 세어 머리, 두 쪽, 걸린 자리를 채우고 풀이는 비워 둔다. 장의 `status: open` 과 같은 낱말이고, 세운 장은 decide 전까지 그 status 다.
+_Avoid_: 장 세우기, raise, create
