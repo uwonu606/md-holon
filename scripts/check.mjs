@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-// The check script. Reads the whole repo every time, prints every failure, exits 1 on any.
+// The check script. Reads the whole data repo every time, prints every failure, exits 1 on any.
 // Grammar: docs/agents/digest-format.md. Terms: CONTEXT.md.
-// Usage: node check.mjs [<dir>]. <dir> holds source/, digest/, conflict/; default is this repo.
+// Usage: node check.mjs [<dir>]. <dir> holds source/, digest/, conflict/; default is the current directory.
+// The data lives in a separate repo (md-holon-data); this repo holds only the tool.
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = process.argv[2] ? resolve(process.argv[2]) : join(dirname(fileURLToPath(import.meta.url)), "..");
+const root = resolve(process.argv[2] ?? process.cwd());
 const failures = [];
 const fail = (file, why) => failures.push(`${file}: ${why}`);
 
