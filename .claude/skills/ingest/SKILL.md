@@ -36,9 +36,9 @@ source 를 끝까지 읽고 `digest/<name>.md` 를 쓴다. claim 은 여섯쯤�
 
 ## 4. conflict 장을 세우고 편을 낸다
 
-`conflict` 쌍마다 문법의 틀로 장을 만들고 `status: open` 으로 둔다. 풀이 절은 이때 쓴다. 검사를 돌리면 "걸린 자리 missing row" 로 뽑았는데 없는 행을 전부 찍는다. 새 장의 행과, 이번 행이 건드린 claim 을 이름 부른 앞선 `open` 장의 행이다. 찍힌 행을 `action` 과 `reason` 을 비운 채 글자 그대로 더한다. 표의 행은 검사가 찍은 것만으로 채운다.
+`node scripts/open.mjs <name>` 을 돌린다. `conflict` 쌍마다 장을 세우고, 이번 행이 건드린 claim 을 이름 부른 앞선 `open` 장에 걸린 자리 행을 더한다. 손으로 장을 만들지 않는다. 풀이·의견·결과는 비어 있고 decide 가 쓴다. `node scripts/check.mjs open <name>` 이 `ok` 를 찍어야 다음이다.
 
-검사가 `ok` 를 찍으면 `.claude/skills/decide/SKILL.md` 를 읽고 그대로 따른다. 이 세션이 이어서 하고 subagent 는 안 띄운다. 새 장과, 행이 자란 앞선 open 장이 대상이다.
+open gate 를 지나면 `.claude/skills/decide/SKILL.md` 를 읽고 그대로 따른다. 이 세션이 이어서 하고 subagent 는 안 띄운다. 새 장과, 행이 자란 앞선 open 장이 대상이다.
 
 **완료 기준**: `node scripts/check.mjs` 가 `ok` 를 찍고, 대상 장마다 `decided` 이거나 의견에 왜 못 냈는지가 적혀 있다.
 

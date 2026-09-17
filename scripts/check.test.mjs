@@ -1,7 +1,7 @@
 // check.mjs 의 깨뜨림 테스트. scripts/fixture/ 를 임시 디렉터리에 복사하고 하나를 깨뜨린 뒤
 // 복사본에 검사를 돌려 exit 1 과 찍혀야 할 실패 줄을 기대한다.
 // 뒤의 테스트는 step 인자와 --where 가 이름과 step 으로 바르게 거르는지 본다.
-// 마지막 테스트는 check.mjs 의 실패 문구를 전부 읽어 한 번도 안 맞은 것이 있으면 실패한다.
+// 마지막 테스트는 check.mjs 와 md.mjs 의 실패 문구를 전부 읽어 한 번도 안 맞은 것이 있으면 실패한다.
 // 실행: node --test scripts/check.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -207,7 +207,7 @@ test("이름 없는 step 인자는 usage 를 찍고 exit 2", () => withCopy((dir
 // fail(step, names, file, `msg ${x}`) 와 splitFront 의 errors.push(`msg`) 의 문구 →
 // "<file>: msg ..." 에 맞는 정규식. ${...} 자리는 무엇이든 된다
 function failMessagePatterns() {
-  const src = readFileSync(check, "utf8");
+  const src = readFileSync(check, "utf8") + readFileSync(join(here, "md.mjs"), "utf8");
   const out = [];
   const arg = "(?:\\[[^\\]]*\\]|\\w+\\([^)]*\\)|[^,()]+?)";
   const lit = "(`[^`]*`|\"[^\"]*\")";

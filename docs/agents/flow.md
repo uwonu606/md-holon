@@ -10,10 +10,10 @@
 
 | step | 하는 이 | 읽는 것 | 쓰는 것 | gate |
 |---|---|---|---|---|
-| fetch | 스크립트 | URL | `source/<name>.md` | `node scripts/check.mjs fetch <name>` |
+| fetch | 스크립트(defuddle) | URL | `source/<name>.md` | `node scripts/check.mjs fetch <name>` |
 | digest | 세션 | `source/<name>.md` | `digest/<name>.md` 의 Claims 절 | `node scripts/check.mjs digest <name>` |
 | comparison | 세션 | 앞선 `digest/*.md` 전부, 그 이름을 부른 `status: open` 장 | `digest/<name>.md` 의 Comparison 표 | `node scripts/check.mjs comparison <name>` |
-| open | 스크립트 | `digest/<name>.md` 의 Comparison 표, 그 claim 을 부른 `open` 장 | `conflict/<name>.C<n>--<old>.C<m>.md` 의 머리·두 쪽·걸린 자리, 앞선 `open` 장의 걸린 자리 행 | `node scripts/check.mjs open <name>` |
+| open | 스크립트(`scripts/open.mjs <name>`) | `digest/<name>.md` 의 Comparison 표, 그 claim 을 부른 `open` 장 | `conflict/<name>.C<n>--<old>.C<m>.md` 의 머리·두 쪽·걸린 자리, 앞선 `open` 장의 걸린 자리 행 | `node scripts/check.mjs open <name>` |
 | decide | 세션 | `<name>` 을 두 쪽 중 하나로 가진 `open` 장, 그 두 digest | 장의 풀이·의견·결과·머리·action·reason, 두 digest 의 stance 줄 | `node scripts/check.mjs decide <name>` |
 
 step 의 계약은 이 행 하나다. 읽는 것 밖의 것을 읽지 않고, 쓰는 것 밖의 것을 쓰지 않고, gate 가 0 으로 끝나면 끝난 것이다. 속은 계약이 아니다. 같은 행을 지키면 세션을 스크립트로, 스크립트를 사람으로 바꿔 끼워도 앞뒤 step 은 모른다.
@@ -53,6 +53,6 @@ flow 는 step 의 순서 목록이고 얇은 스킬 글이다. step 마다 부�
 
 flow 는 자리를 어디에도 적지 않는다. 끊긴 flow 는 `--where` 로 파일에서 자리를 도로 세어 이어간다. 별도 orchestrator 와 상태 파일을 두지 않는 이유는 둘이다. 자리의 정본이 파일과 상태 파일 둘이 되고, 세션 step 은 스크립트가 함수처럼 부를 수 없어 orchestrator 가 flow 를 다 쥐지 못한다. 판단 step 이 API 호출이 되어 부를 수 있게 되는 때에 다시 본다.
 
-step 하나만 돌리기는 그 step 의 스크립트나 스킬을 바로 부르는 것이고, 속을 바꿔 끼기는 목록의 한 줄에서 부를 것의 이름을 바꾸는 것이고, step 을 빼고 더하기는 줄을 지우거나 끼우는 것이다.
+step 하나만 돌리기는 그 step 의 스크립트나 스킬을 바로 부르는 것이고(open 이면 `node scripts/open.mjs <name>` 뒤에 `node scripts/check.mjs open <name>`), 속을 바꿔 끼기는 목록의 한 줄에서 부를 것의 이름을 바꾸는 것이고, step 을 빼고 더하기는 줄을 지우거나 끼우는 것이다.
 
 지금 `.claude/skills/ingest/SKILL.md` 는 다섯 단계를 한 세션에서 죽 돌고 commit 까지 한다. 이 표대로 다시 쓰는 것은 [이슈 #23](https://github.com/uwonu606/md-holon/issues/23) 이다.
