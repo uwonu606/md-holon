@@ -5,10 +5,10 @@ fetched: 2026-01-02
 ## Claims
 
 - C1: 옛 기록은 새 기록으로 갈린다.
-  > Old notes are replaced by new ones.
+  > 옛 기록은 새 기록으로 갈아 끼운다.
   stance: won over alpha#C1 · beta.C1--alpha.C1
 - C2: 기록은 사람이 검사한다.
-  > Notes are checked by a person too.
+  > 기록은 사람이 하나씩 검사하기도 한다.
 
 ## Comparison
 

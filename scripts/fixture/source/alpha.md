@@ -1,4 +1,4 @@
 # Alpha
 
-Old notes are kept forever.
-Notes are checked by a person.
+옛 기록은 영원히 보관한다.
+기록은 사람이 하나씩 검사한다.

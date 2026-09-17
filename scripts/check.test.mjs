@@ -1,7 +1,7 @@
-// Breakage tests for check.mjs. Copies scripts/fixture/ to a temp dir, breaks one thing,
-// runs the check on the copy and expects exit 1 plus the failure line it should print.
-// The last test reads every fail(...) message in check.mjs and fails if one was never hit.
-// Run: node --test scripts/check.test.mjs
+// check.mjs 의 깨뜨림 테스트. scripts/fixture/ 를 임시 디렉터리에 복사하고 하나를 깨뜨린 뒤
+// 복사본에 검사를 돌려 exit 1 과 찍혀야 할 실패 줄을 기대한다.
+// 마지막 테스트는 check.mjs 의 fail(...) 문구를 전부 읽어 한 번도 안 맞은 것이 있으면 실패한다.
+// 실행: node --test scripts/check.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { cpSync, mkdtempSync, rmSync, readFileSync, writeFileSync, unlinkSync } from "node:fs";
@@ -29,8 +29,8 @@ function withCopy(fn) {
   }
 }
 
-// mutations. edit() refuses to run when the text it wants to change is gone, so a fixture
-// edit that silently disarms a break shows up as an error, not a passing test.
+// 깨뜨리는 손. edit() 은 바꾸려는 글이 없으면 거부한다. fixture 를 고쳐서 깨뜨림이 조용히
+// 무뎌지면 통과가 아니라 에러로 드러난다.
 const edit = (rel, from, to) => (dir) => {
   const p = join(dir, rel);
   const t = readFileSync(p, "utf8");
@@ -43,9 +43,9 @@ const copy = (from, to) => (dir) => writeFileSync(join(dir, to), readFileSync(jo
 const OPEN = "conflict/gamma.C1--alpha.C1.md";
 const DECIDED = "conflict/beta.C1--alpha.C1.md";
 
-// [name, mutation, a substring the failure output must contain]
+// [이름, 깨뜨리는 손, 실패 출력에 들어 있어야 할 문구]
 const breaks = [
-  // digest frontmatter
+  // digest 머리
   ["digest 머리가 1행에서 안 시작", edit("digest/alpha.md", "---\nfetched", "\n---\nfetched"), "frontmatter must start at line 1 with ---"],
   ["digest 머리가 안 닫힘", edit("digest/gamma.md", "fetched: 2026-01-03\n---", "fetched: 2026-01-03"), "frontmatter is not closed"],
   ["digest 머리에 key: value 아닌 줄", edit("digest/gamma.md", "fetched: 2026-01-03", "fetched: 2026-01-03\nnonsense"), 'frontmatter line is not "key: value": nonsense'],
@@ -55,14 +55,14 @@ const breaks = [
   // claims
   ["## Claims 없음", edit("digest/gamma.md", "## Claims", "## Claim"), "missing ## Claims"],
   ["claim 번호에 빈틈", edit("digest/gamma.md", "- C1: 옛 기록은 일주일", "- C2: 옛 기록은 일주일"), "claim ids must run C1, C2, ... without gaps; found C2 where C1 was expected"],
-  ["claim 없이 인용만", edit("digest/gamma.md", "## Claims\n\n", "## Claims\n\n  > stray\n"), "excerpt without a claim above it"],
-  ["인용이 둘", edit("digest/gamma.md", "  > Old notes are dropped after a week.\n", "  > Old notes are dropped after a week.\n  > Old notes are dropped after a week.\n"), "C1: more than one excerpt"],
-  ["인용 한 글자 바꿈", edit("digest/gamma.md", "dropped after a week.", "dropped after a month."), "C1: excerpt is not verbatim in source/gamma.md"],
+  ["claim 없이 인용만", edit("digest/gamma.md", "## Claims\n\n", "## Claims\n\n  > 떠도는 인용\n"), "excerpt without a claim above it"],
+  ["인용이 둘", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", "  > 옛 기록은 일주일이 지나면 버린다.\n  > 옛 기록은 일주일이 지나면 버린다.\n"), "C1: more than one excerpt"],
+  ["인용 한 낱말 바꿈", edit("digest/gamma.md", "일주일이 지나면 버린다.", "한 달이 지나면 버린다."), "C1: excerpt is not verbatim in source/gamma.md"],
   ["claim 없이 stance 만", edit("digest/gamma.md", "## Claims\n\n", "## Claims\n\n  stance: lost to alpha#C1 · beta.C1--alpha.C1\n"), "stance line without a claim above it"],
-  ["stance 가 인용보다 앞", edit("digest/beta.md", "  > Old notes are replaced by new ones.\n  stance: won over alpha#C1 · beta.C1--alpha.C1", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n  > Old notes are replaced by new ones."), "C1: stance line before the excerpt"],
-  ["claim 문법 밖의 줄", edit("digest/gamma.md", "  > Old notes are dropped after a week.\n", "  > Old notes are dropped after a week.\n  note: hi\n"), "line not part of the claim grammar:   note: hi"],
-  ["인용 없는 claim", edit("digest/gamma.md", "  > Old notes are dropped after a week.\n", ""), "C1: no excerpt"],
-  // comparison table
+  ["stance 가 인용보다 앞", edit("digest/beta.md", "  > 옛 기록은 새 기록으로 갈아 끼운다.\n  stance: won over alpha#C1 · beta.C1--alpha.C1", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n  > 옛 기록은 새 기록으로 갈아 끼운다."), "C1: stance line before the excerpt"],
+  ["claim 문법 밖의 줄", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", "  > 옛 기록은 일주일이 지나면 버린다.\n  note: hi\n"), "line not part of the claim grammar:   note: hi"],
+  ["인용 없는 claim", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", ""), "C1: no excerpt"],
+  // Comparison 표
   ["## Comparison 없음", edit("digest/gamma.md", "## Comparison", "## Compare"), "missing ## Comparison"],
   ["Comparison 머리가 다름", edit("digest/gamma.md", "| digest | verdict | pairs | quote |", "| digest | verdict | quote |"), "Comparison header must be | digest | verdict | pairs | quote |"],
   ["Comparison 행의 칸이 셋", edit("digest/gamma.md", "| beta | unrelated | | 기록은 사람이 검사한다. |", "| beta | unrelated | 기록은 사람이 검사한다. |"), "Comparison row must have 4 cells"],
@@ -75,24 +75,24 @@ const breaks = [
   ["quote 가 상대 digest 에 없음", edit("digest/gamma.md", "| alpha | conflict | conflict C1↔C1 | 옛 기록은 영원히 남는다. |", "| alpha | conflict | conflict C1↔C1 | 옛 기록은 잠깐 남는다. |"), "Comparison row alpha: quote is not verbatim in digest/alpha.md"],
   ["pair 의 왼쪽 claim 없음", edit("digest/gamma.md", "conflict C1↔C1", "conflict C9↔C1"), "Comparison row alpha: gamma#C9 does not exist"],
   ["pair 의 오른쪽 claim 없음", edit("digest/gamma.md", "conflict C1↔C1", "conflict C1↔C9"), "Comparison row alpha: alpha#C9 does not exist"],
-  // coverage
+  // 견줌 빠짐
   ["Comparison 행 삭제", edit("digest/gamma.md", "| beta | unrelated | | 기록은 사람이 검사한다. |\n", ""), "beta and gamma were never compared"],
   ["두 digest 가 서로 견줌", edit("digest/beta.md", "| alpha | conflict | conflict C1↔C1, overlap C2↔C2 | 옛 기록은 영원히 남는다. |\n", "| alpha | conflict | conflict C1↔C1, overlap C2↔C2 | 옛 기록은 영원히 남는다. |\n| gamma | unrelated | | 옛 기록은 일주일 뒤 버린다. |\n"), "beta and gamma compare each other"],
-  // conflict page set
+  // conflict 장의 집합
   ["장 삭제", remove(OPEN), `${OPEN}: missing: a Comparison row has this conflict pair`],
   ["행 없는 장", copy(OPEN, "conflict/gamma.C1--beta.C1.md"), "conflict/gamma.C1--beta.C1.md: no Comparison row has this conflict pair"],
-  // conflict page frontmatter
+  // conflict 장 머리
   ["opened 가 날짜가 아님", edit(OPEN, "opened: 2026-01-03", "opened: soon"), "opened must be an ISO date"],
   ["status 가 둘 중 하나가 아님", edit(OPEN, "status: open", "status: pending"), "status must be open or decided"],
   ["장 머리에 모르는 key", edit(OPEN, "status: open", "status: open\nfoo: bar"), "frontmatter key not allowed: foo"],
   ["open 장에 decided_by", edit(OPEN, "status: open", "status: open\ndecided_by: ai"), "open page must not have decided_by"],
   ["decided 장에 decided_by 없음", edit(DECIDED, "decided_by: ai\n", ""), "decided page needs decided_by"],
-  // conflict page body
+  // conflict 장 본문
   ["제목의 쌍이 다름", edit(OPEN, "# gamma#C1 ↔ alpha#C1", "# gamma#C1 ↔ alpha#C2"), 'title must be "# gamma#C1 ↔ alpha#C1"'],
   ["절 하나 없음", edit(OPEN, "## 의견", "## 생각"), "missing ## 의견"],
-  ["장이 가리킨 claim 이 digest 에 없음", edit("digest/alpha.md", "- C1: 옛 기록은 영원히 남는다.\n  > Old notes are kept forever.\n  stance: lost to beta#C1 · beta.C1--alpha.C1\n", ""), "alpha#C1 does not exist"],
+  ["장이 가리킨 claim 이 digest 에 없음", edit("digest/alpha.md", "- C1: 옛 기록은 영원히 남는다.\n  > 옛 기록은 영원히 보관한다.\n  stance: lost to beta#C1 · beta.C1--alpha.C1\n", ""), "alpha#C1 does not exist"],
   ["두 쪽의 claim 줄이 다름", edit(OPEN, "**gamma#C1**: 옛 기록은 일주일 뒤 버린다.", "**gamma#C1**: 옛 기록은 버린다."), '두 쪽: missing "**gamma#C1**: <claim line>" verbatim from digest/gamma.md'],
-  ["두 쪽의 인용이 다름", edit(OPEN, "> Old notes are dropped after a week.", "> Old notes are dropped."), "두 쪽: excerpt under gamma#C1 is not verbatim from digest/gamma.md"],
+  ["두 쪽의 인용이 다름", edit(OPEN, "> 옛 기록은 일주일이 지나면 버린다.", "> 옛 기록은 버린다."), "두 쪽: excerpt under gamma#C1 is not verbatim from digest/gamma.md"],
   // 걸린 자리
   ["걸린 자리 머리가 다름", edit(OPEN, "| 파일 | 자리 | 무엇 | action | reason |", "| file | 자리 | 무엇 | action | reason |"), "걸린 자리 header must be | 파일 | 자리 | 무엇 | action | reason |"],
   ["걸린 자리 행의 칸이 넷", edit(OPEN, "| digest/gamma.md | C1 | claim | | |", "| digest/gamma.md | C1 | claim | |"), "걸린 자리 row must have 5 cells"],
@@ -102,7 +102,7 @@ const breaks = [
   ["decided 장의 reason 이 빔", edit(DECIDED, "| changed | won over 줄을 더했다 |", "| changed | |"), "reason is empty"],
   ["open 장에 걸린 자리 행 빠짐", edit(OPEN, "| digest/alpha.md | C1 | claim | | |\n", ""), "걸린 자리 missing row: | digest/alpha.md | C1 | claim |"],
   ["id 에서 안 나오는 걸린 자리 행", edit(OPEN, "| digest/alpha.md | C1 | claim | | |\n", "| digest/alpha.md | C1 | claim | | |\n| digest/beta.md | C2 | claim | | |\n"), "걸린 자리 row not derived from ids: | digest/beta.md | C2 | claim |"],
-  // 의견 / 결과 / stance mirror
+  // 의견 / 결과 / stance 거울
   ["open 장에 결과 씀", edit(OPEN, "## 결과\n", "## 결과\n\n2026-01-03 gamma#C1 편.\n"), "결과 is written but status is open"],
   ["decided 장에 의견 없음", edit(DECIDED, "beta#C1 편. 첫 기준에서 갈렸다. 이 fixture 의 쓰임은 새 것이 옛 것을 간다.\n", ""), "decided without 의견"],
   ["decided 장에 결과 없음", edit(DECIDED, "2026-01-02 beta#C1 편.\n", ""), "decided without 결과"],
@@ -111,15 +111,15 @@ const breaks = [
   ["새 쪽 stance 가 다른 claim 을 가리킴", edit("digest/beta.md", "won over alpha#C1 ·", "won over alpha#C2 ·"), "C1: stance names alpha#C2, page beta.C1--alpha.C1 pairs it with alpha#C1"],
   ["옛 쪽 stance 가 다른 claim 을 가리킴", edit("digest/alpha.md", "lost to beta#C1 ·", "lost to beta#C2 ·"), "C1: stance names beta#C2, page beta.C1--alpha.C1 pairs it with beta#C1"],
   ["양쪽 stance 가 같은 말", edit("digest/alpha.md", "stance: lost to beta#C1", "stance: won over beta#C1"), 'both claims say "won over"; one must be lost to, the other won over'],
-  // every stance line
-  ["stance 가 없는 장을 가리킴", edit("digest/gamma.md", "  > Old notes are dropped after a week.\n", "  > Old notes are dropped after a week.\n  stance: lost to alpha#C1 · nope.C1--alpha.C1\n"), "C1: stance names a conflict page that does not exist: nope.C1--alpha.C1"],
-  ["stance 가 open 장을 가리킴", edit("digest/gamma.md", "  > Old notes are dropped after a week.\n", "  > Old notes are dropped after a week.\n  stance: lost to alpha#C1 · gamma.C1--alpha.C1\n"), "C1: stance names a page that is still open: gamma.C1--alpha.C1"],
+  // stance 줄 하나하나
+  ["stance 가 없는 장을 가리킴", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", "  > 옛 기록은 일주일이 지나면 버린다.\n  stance: lost to alpha#C1 · nope.C1--alpha.C1\n"), "C1: stance names a conflict page that does not exist: nope.C1--alpha.C1"],
+  ["stance 가 open 장을 가리킴", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", "  > 옛 기록은 일주일이 지나면 버린다.\n  stance: lost to alpha#C1 · gamma.C1--alpha.C1\n"), "C1: stance names a page that is still open: gamma.C1--alpha.C1"],
   ["stance 의 쌍이 장의 쌍이 아님", edit("digest/alpha.md", "  stance: lost to beta#C1 · beta.C1--alpha.C1\n", "  stance: lost to beta#C1 · beta.C1--alpha.C1\n  stance: lost to gamma#C1 · beta.C1--alpha.C1\n"), "C1: stance pair alpha#C1 / gamma#C1 is not the pair of beta.C1--alpha.C1"],
-  // prior decided page line in 두 쪽
+  // 두 쪽의 앞선 decided 장 줄
   ["앞선 decided 장의 줄 없음", edit(OPEN, "alpha#C1 은 beta.C1--alpha.C1 에서 lost 편 (2026-01-02)\n", ""), "두 쪽: no line about the earlier decided page beta.C1--alpha.C1"],
 ];
 
-const printed = new Set(); // every failure line any break produced
+const printed = new Set(); // 깨뜨림들이 찍은 실패 줄 전부
 
 test("fixture 는 그대로 통과한다", () => withCopy((dir) => {
   const r = run(dir);
@@ -137,7 +137,7 @@ for (const [name, mutate, expected] of breaks) {
   }));
 }
 
-// fail(file, `msg ${x}`) → a regex matching "<file>: msg ..." with each ${...} as a wildcard
+// fail(file, `msg ${x}`) → "<file>: msg ..." 에 맞는 정규식. ${...} 자리는 무엇이든 된다
 function failMessagePatterns() {
   const src = readFileSync(check, "utf8");
   const out = [];

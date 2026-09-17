@@ -8,10 +8,10 @@ status: open
 ## 두 쪽
 
 **gamma#C1**: 옛 기록은 일주일 뒤 버린다.
-> Old notes are dropped after a week.
+> 옛 기록은 일주일이 지나면 버린다.
 
 **alpha#C1**: 옛 기록은 영원히 남는다.
-> Old notes are kept forever.
+> 옛 기록은 영원히 보관한다.
 
 alpha#C1 은 beta.C1--alpha.C1 에서 lost 편 (2026-01-02)
 

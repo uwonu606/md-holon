@@ -9,10 +9,10 @@ decided_by: ai
 ## 두 쪽
 
 **beta#C1**: 옛 기록은 새 기록으로 갈린다.
-> Old notes are replaced by new ones.
+> 옛 기록은 새 기록으로 갈아 끼운다.
 
 **alpha#C1**: 옛 기록은 영원히 남는다.
-> Old notes are kept forever.
+> 옛 기록은 영원히 보관한다.
 
 ## 풀이
 
