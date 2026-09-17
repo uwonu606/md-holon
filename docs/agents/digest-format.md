@@ -4,12 +4,21 @@
 
 ## 배치
 
+저장소가 둘이다. 데이터는 `md-holon-data`, 도구는 `md-holon`. 데이터는 도구를 부르지 않고, 도구가 데이터 저장소의 루트를 경로 인자나 현재 디렉터리로 받는다. 아래 문법의 경로는 전부 데이터 루트 기준이다.
+
+데이터 저장소 `md-holon-data`:
+
 ```
 source/<name>.md     defuddle 출력 그대로. 고치지 않는다.
 digest/<name>.md     source 하나에 하나, 같은 <name>. ingest 세션이 쓴다.
 conflict/<new>.C<n>--<old>.C<m>.md   conflict 쌍 하나에 하나. 아래 conflict 장.
-scripts/check.mjs    검사 스크립트. `node scripts/check.mjs [<dir>]`. <dir> 이 없으면 이 저장소. .githooks/pre-commit 이 커밋마다 돌린다(기계 전체 hook dispatcher 가 <repo>/.githooks/<name> 을 부른다).
-scripts/check.test.mjs   검사 스크립트의 깨뜨림 테스트. fixture 를 복사해 한 군데씩 깨고 그 실패 줄을 기대한다. check.mjs 를 고쳤으면 `node --test scripts/check.test.mjs`.
+```
+
+도구 저장소 `md-holon`:
+
+```
+scripts/check.mjs    검사 스크립트. `node scripts/check.mjs [<dir>]`. <dir> 은 데이터 루트이고 없으면 현재 디렉터리. hook 은 없다. gate 는 step 마다 세션이 지나고 flow 의 마지막에 인자 없이 한 번 더 돌린 뒤 사람이 커밋한다.
+scripts/check.test.mjs   검사 스크립트의 깨뜨림 테스트. fixture 를 복사해 한 군데씩 깨고 그 실패 줄을 기대한다. check.mjs 를 고쳤으면 `node --test scripts/check.test.mjs`. GitHub Actions 가 push 마다 돌린다.
 scripts/fixture/     테스트의 바탕. 문법을 다 갖춘 최소 저장소(source/digest/conflict). 문법이 바뀌면 같이 고친다.
 docs/agents/flow.md  step 마다 읽는 것, 쓰는 것, gate. flow 가 step 을 잇는 법.
 .claude/skills/ingest/SKILL.md

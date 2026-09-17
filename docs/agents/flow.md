@@ -20,7 +20,7 @@ step 의 계약은 이 행 하나다. 읽는 것 밖의 것을 읽지 않고, �
 
 읽는 것이 다르면 다른 step 이고, 하는 이가 다르면 다른 step 이다. digest 와 comparison 은 같은 파일에 쓰지만 읽는 것이 다르고, open 과 decide 는 같은 장에 쓰지만 하는 이가 다르다.
 
-check 와 commit 은 step 이 아니다. check 는 모든 step 뒤에 서는 gate 이고, commit 은 사람이 diff 를 읽고 한다. `.githooks/pre-commit` 이 인자 없는 check 를 다시 돌린다.
+check 와 commit 은 step 이 아니다. check 는 모든 step 뒤에 서는 gate 이고, commit 은 사람이 diff 를 읽고 한다. hook 은 없다. flow 의 마지막에 세션이 인자 없는 check 를 한 번 더 돌리고, 사람은 그 뒤에 커밋한다.
 
 ## gate
 
@@ -30,7 +30,7 @@ check 와 commit 은 step 이 아니다. check 는 모든 step 뒤에 서는 gat
 |---|---|---|---|
 | `check.mjs <step> <name>` | 이 step 이 끝났나 | 그 step 의 실패 줄 전부 | 0 이면 완료. step 의 완료 기준 |
 | `check.mjs --where <name>` | 이 글은 어디까지 왔나 | step 마다 한 단어 | 뜻 없음 |
-| `check.mjs [<dir>]` | 저장소 전체가 성한가 | 실패 줄 전부, 또는 `ok` 줄 | 0 이면 성함. pre-commit 이 부른다 |
+| `check.mjs [<dir>]` | 저장소 전체가 성한가 | 실패 줄 전부, 또는 `ok` 줄 | 0 이면 성함. flow 의 마지막에 세션이 부른다 |
 
 step gate 는 그 step 만 본다. 앞 step 의 완료는 flow 가 앞 gate 를 지나며 확인한 것으로 본다.
 

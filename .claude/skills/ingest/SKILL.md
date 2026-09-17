@@ -44,7 +44,7 @@ source 를 끝까지 읽고 `digest/<name>.md` 를 쓴다. claim 은 여섯쯤�
 
 ## 5. 커밋하고 보고한다
 
-`source/`, `digest/`, `conflict/` 를 한 커밋으로 묶는다. pre-commit hook 이 검사를 다시 돌린다. 보고에 적는 것:
+`source/`, `digest/`, `conflict/` 를 한 커밋으로 묶는다. 커밋 전에 `node scripts/check.mjs` 를 한 번 더 돌린다. 보고에 적는 것:
 
 - 앞선 digest 수,
 - source 와 앞선 digest 전부의 `wc -m` 합(한 세션이 읽어야 했던 양),
