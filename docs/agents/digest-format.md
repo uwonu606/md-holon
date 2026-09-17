@@ -17,7 +17,7 @@ conflict/<new>.C<n>--<old>.C<m>.md   conflict 쌍 하나에 하나. 아래 confl
 도구 저장소 `md-holon`:
 
 ```
-scripts/check.mjs    검사 스크립트. `node scripts/check.mjs [<dir>]`. <dir> 은 데이터 루트이고 없으면 현재 디렉터리. hook 은 없다. gate 는 step 마다 세션이 지나고 flow 의 마지막에 인자 없이 한 번 더 돌린 뒤 사람이 커밋한다.
+scripts/check.mjs    검사 스크립트. `node scripts/check.mjs [<dir>]`, `node scripts/check.mjs <step> <name> [<dir>]`, `node scripts/check.mjs --where <name> [<dir>]`. <dir> 은 데이터 루트이고 없으면 현재 디렉터리. 세 모양은 `docs/agents/flow.md` 의 gate 절. hook 은 없다. gate 는 step 마다 세션이 지나고 flow 의 마지막에 인자 없이 한 번 더 돌린 뒤 사람이 커밋한다.
 scripts/check.test.mjs   검사 스크립트의 깨뜨림 테스트. fixture 를 복사해 한 군데씩 깨고 그 실패 줄을 기대한다. check.mjs 를 고쳤으면 `node --test scripts/check.test.mjs`. GitHub Actions 가 push 마다 돌린다.
 scripts/fixture/     테스트의 바탕. 문법을 다 갖춘 최소 저장소(source/digest/conflict). 문법이 바뀌면 같이 고친다.
 docs/agents/flow.md  step 마다 읽는 것, 쓰는 것, gate. flow 가 step 을 잇는 법.
@@ -112,7 +112,7 @@ decided_by: ai
 - 두 쪽은 각 claim 의 줄과 인용을 digest 에서 글자 그대로 되풀이한다. 그 밑에, 두 claim 중 하나를 이름 부른 앞선 `decided` 장마다 한 줄을 둔다. 편을 내기 전에 앞선 stance 를 보게 하기 위해서다. 이미 stance 를 가진 claim 이라도 새 conflict 마다 장은 다시 선다.
 - 걸린 자리는 검사 스크립트가 id 만으로 뽑는다. 두 쪽 중 하나의 `<name>#C<n>` 을 이름 부른 모든 claim 줄, 모든 comparison 행, 모든 다른 conflict 장이다. 앞의 세 열은 스크립트의 것이고, `open` 장의 행이 뽑은 집합과 다르면 실패다. `decided` 장은 얼린다. 나중에 뽑히게 된 행(같은 claim 을 이름 부른 나중 장이나 comparison 행)은 그 나중 장에 적히고, decided 장은 어떤 id 로도 안 뽑히는 행이 있을 때만 실패한다. id 가 없는 자리는 적지 않는다.
 - `action` 과 `reason` 은 decide 세션이 행마다 채운다. `action` 은 이 decide 가 그 자리를 고쳤으면 `changed`, 그대로 두었으면 `kept` 다. stance 줄이 붙은 claim 행은 둘 다 `changed` 이고, comparison 행과 다른 장은 `kept` 다. `reason` 은 한 줄이며 비지 않는다. `open` 장에서는 둘 다 비어 있다.
-- 의견은 decide 세션이 쓴다. 편을 냈으면 어느 쪽이고 어느 기준에서 갈렸는지, 못 냈으면 왜 못 냈는지. `open` 장에 의견이 차 있는 것은 정상이다. 세 기준을 다 지나도 안 갈린 장이다.
+- 의견은 decide 세션이 쓴다. 편을 냈으면 어느 쪽이고 어느 기준에서 갈렸는지, 못 냈으면 왜 못 냈는지. `open` 장에 의견이 차 있는 것은 정상이다. 세 기준을 다 지나도 안 갈린 장이다. decide gate 는 `open` 장에도 의견이 있어야 지난다.
 - 결과는 의견 뒤에 decide 세션이 쓰고, 같은 편집에서 `status` 를 `decided` 로 바꾸고 `decided_by` 를 단다. 그 편집에서 세션은 두 claim 밑에 `stance` 줄도 하나씩 더한다. claim 줄과 인용은 고쳐 쓰거나 지우지 않는다. 밑의 stance 줄이 유일한 표시다.
 - `decided` 장은 모든 `action` 과 `reason` 이 차 있고, 두 claim 밑에 그 장을 이름 부른 `stance` 줄이 있어야 한다(한쪽은 `lost`, 다른 쪽은 `won`). 장이 없거나 아직 `open` 인 `stance` 줄은 실패다.
 - 뒤집기: 나중 장이 앞선 decided 장과 반대 편을 내면 그 앞선 장은 고치지 않는다. 새 장의 걸린 자리에서 그 행은 `kept` 이고 reason 에 이 장이 그것을 뒤집는다고 적으며, 새 stance 줄은 claim 의 옛 줄 밑에 더한다.

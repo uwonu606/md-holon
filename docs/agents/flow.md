@@ -43,7 +43,9 @@ step gate 는 그 step 만 본다. 앞 step 의 완료는 flow 가 앞 gate 를 
 
 `--where` 는 step 을 왼쪽부터 돌리다 처음 막힌 데서 멈춘다. 단어는 넷이다. `ok` 는 끝났다, `missing ...` 은 덜 했다, `not ...` 은 틀렸다, `-` 는 앞 step 이 `ok` 가 아니라 아직 안 본다. 앞 step 이 덜 됐을 때 뒤 step 의 없는 것을 틀림으로 찍지 않기 위해 `-` 를 둔다. 한 step 에 둘이 섞이면 틀렸다가 이긴다.
 
-지금 `scripts/check.mjs` 는 인자 없는 모양만 있다. step 인자와 `--where` 는 [이슈 #21](https://github.com/uwonu606/md-holon/issues/21) 이 놓는다.
+세 모양은 한 번의 읽기다. 스크립트는 데이터 루트를 통째로 읽어 실패마다 step 과 `<name>` 을 달아 두고, 인자에 따라 거른다. 인자 없는 모양은 모든 step 과 모든 이름의 합이다. open 과 decide 의 실패는 장의 두 쪽 이름에 다 걸리고, 걸린 자리 행은 그 행의 digest 나 다른 장의 이름에도 걸리고, stance 줄은 상대 claim 의 이름에도 걸린다. `<name>` 하나의 step 을 지나려면 그 이름이 건드린 다른 장의 행까지 봐야 하기 때문이다.
+
+step 이 세는 것에 세 줄이 있다. fetch 는 `source/<name>.md` 가 있고 머리에 `source:` 가 있는 것을 본다. digest 는 source 마다 같은 이름의 digest 가 있는 것을 본다. decide 는 `open` 장에도 의견이 차 있는 것을 본다. open 장은 decide 를 지난 뒤이고, 못 낸 이유가 의견에 있어야 하기 때문이다. 이 셋은 [이슈 #21](https://github.com/uwonu606/md-holon/issues/21) 이 더했다.
 
 ## flow
 

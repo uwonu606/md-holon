@@ -1,3 +1,8 @@
+---
+title: "alpha"
+source: "https://example.test/alpha"
+---
+
 # Alpha
 
 옛 기록은 영원히 보관한다.

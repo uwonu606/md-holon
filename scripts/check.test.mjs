@@ -1,6 +1,7 @@
 // check.mjs 의 깨뜨림 테스트. scripts/fixture/ 를 임시 디렉터리에 복사하고 하나를 깨뜨린 뒤
 // 복사본에 검사를 돌려 exit 1 과 찍혀야 할 실패 줄을 기대한다.
-// 마지막 테스트는 check.mjs 의 fail(...) 문구를 전부 읽어 한 번도 안 맞은 것이 있으면 실패한다.
+// 뒤의 테스트는 step 인자와 --where 가 이름과 step 으로 바르게 거르는지 본다.
+// 마지막 테스트는 check.mjs 의 실패 문구를 전부 읽어 한 번도 안 맞은 것이 있으면 실패한다.
 // 실행: node --test scripts/check.test.mjs
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -14,8 +15,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const check = join(here, "check.mjs");
 const fixture = join(here, "fixture");
 
-function run(dir) {
-  const r = spawnSync(process.execPath, [check, dir], { encoding: "utf8" });
+function run(dir, ...args) {
+  const r = spawnSync(process.execPath, [check, ...args, dir], { encoding: "utf8" });
   return { status: r.status, out: r.stdout, err: r.stderr };
 }
 
@@ -49,9 +50,13 @@ const breaks = [
   ["digest 머리가 1행에서 안 시작", edit("digest/alpha.md", "---\nfetched", "\n---\nfetched"), "frontmatter must start at line 1 with ---"],
   ["digest 머리가 안 닫힘", edit("digest/gamma.md", "fetched: 2026-01-03\n---", "fetched: 2026-01-03"), "frontmatter is not closed"],
   ["digest 머리에 key: value 아닌 줄", edit("digest/gamma.md", "fetched: 2026-01-03", "fetched: 2026-01-03\nnonsense"), 'frontmatter line is not "key: value": nonsense'],
-  ["fetched 가 날짜가 아님", edit("digest/gamma.md", "fetched: 2026-01-03", "fetched: yesterday"), "fetched must be an ISO date"],
+  ["fetched 없음", edit("digest/gamma.md", "fetched: 2026-01-03\n", "title: x\n"), "missing fetched in frontmatter"],
+  ["fetched 가 날짜가 아님", edit("digest/gamma.md", "fetched: 2026-01-03", "fetched: yesterday"), "fetched is not an ISO date"],
   ["digest 머리에 모르는 key", edit("digest/gamma.md", "fetched: 2026-01-03", "fetched: 2026-01-03\nextra: 1"), "frontmatter key not allowed: extra"],
-  ["source 없는 digest", remove("source/gamma.md"), "no source/gamma.md"],
+  // fetch
+  ["source 없는 digest", remove("source/gamma.md"), "source/gamma.md: missing: no such file"],
+  ["source 머리에 source: 없음", edit("source/gamma.md", "source: \"https://example.test/gamma\"\n", ""), "source/gamma.md: missing source: <url> in frontmatter"],
+  ["digest 없는 source", remove("digest/gamma.md"), "digest/gamma.md: missing: no such file"],
   // claims
   ["## Claims 없음", edit("digest/gamma.md", "## Claims", "## Claim"), "missing ## Claims"],
   ["claim 번호에 빈틈", edit("digest/gamma.md", "- C1: 옛 기록은 일주일", "- C2: 옛 기록은 일주일"), "claim ids must run C1, C2, ... without gaps; found C2 where C1 was expected"],
@@ -61,7 +66,7 @@ const breaks = [
   ["claim 없이 stance 만", edit("digest/gamma.md", "## Claims\n\n", "## Claims\n\n  stance: lost to alpha#C1 · beta.C1--alpha.C1\n"), "stance line without a claim above it"],
   ["stance 가 인용보다 앞", edit("digest/beta.md", "  > 옛 기록은 새 기록으로 갈아 끼운다.\n  stance: won over alpha#C1 · beta.C1--alpha.C1", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n  > 옛 기록은 새 기록으로 갈아 끼운다."), "C1: stance line before the excerpt"],
   ["claim 문법 밖의 줄", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", "  > 옛 기록은 일주일이 지나면 버린다.\n  note: hi\n"), "line not part of the claim grammar:   note: hi"],
-  ["인용 없는 claim", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", ""), "C1: no excerpt"],
+  ["인용 없는 claim", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", ""), "C1: missing excerpt"],
   // Comparison 표
   ["## Comparison 없음", edit("digest/gamma.md", "## Comparison", "## Compare"), "missing ## Comparison"],
   ["Comparison 머리가 다름", edit("digest/gamma.md", "| digest | verdict | pairs | quote |", "| digest | verdict | quote |"), "Comparison header must be | digest | verdict | pairs | quote |"],
@@ -82,11 +87,12 @@ const breaks = [
   ["장 삭제", remove(OPEN), `${OPEN}: missing: a Comparison row has this conflict pair`],
   ["행 없는 장", copy(OPEN, "conflict/gamma.C1--beta.C1.md"), "conflict/gamma.C1--beta.C1.md: no Comparison row has this conflict pair"],
   // conflict 장 머리
-  ["opened 가 날짜가 아님", edit(OPEN, "opened: 2026-01-03", "opened: soon"), "opened must be an ISO date"],
+  ["opened 가 날짜가 아님", edit(OPEN, "opened: 2026-01-03", "opened: soon"), "opened is not an ISO date"],
+  ["opened 없음", edit(OPEN, "opened: 2026-01-03\n", ""), "missing opened in frontmatter"],
   ["status 가 둘 중 하나가 아님", edit(OPEN, "status: open", "status: pending"), "status must be open or decided"],
   ["장 머리에 모르는 key", edit(OPEN, "status: open", "status: open\nfoo: bar"), "frontmatter key not allowed: foo"],
   ["open 장에 decided_by", edit(OPEN, "status: open", "status: open\ndecided_by: ai"), "open page must not have decided_by"],
-  ["decided 장에 decided_by 없음", edit(DECIDED, "decided_by: ai\n", ""), "decided page needs decided_by"],
+  ["decided 장에 decided_by 없음", edit(DECIDED, "decided_by: ai\n", ""), "missing decided_by on a decided page"],
   // conflict 장 본문
   ["제목의 쌍이 다름", edit(OPEN, "# gamma#C1 ↔ alpha#C1", "# gamma#C1 ↔ alpha#C2"), 'title must be "# gamma#C1 ↔ alpha#C1"'],
   ["절 하나 없음", edit(OPEN, "## 의견", "## 생각"), "missing ## 의견"],
@@ -99,15 +105,17 @@ const breaks = [
   ["걸린 자리 행 중복", edit(OPEN, "| digest/gamma.md | C1 | claim | | |\n", "| digest/gamma.md | C1 | claim | | |\n| digest/gamma.md | C1 | claim | | |\n"), "걸린 자리 row duplicated: digest/gamma.md|C1|claim"],
   ["open 장에 action 이 참", edit(OPEN, "| digest/gamma.md | C1 | claim | | |", "| digest/gamma.md | C1 | claim | kept | x |"), "action and reason must be empty while open"],
   ["decided 장의 action 이 둘 중 하나가 아님", edit(DECIDED, "| digest/beta.md | C1 | claim | changed |", "| digest/beta.md | C1 | claim | moved |"), "action must be changed or kept"],
-  ["decided 장의 reason 이 빔", edit(DECIDED, "| changed | won over 줄을 더했다 |", "| changed | |"), "reason is empty"],
-  ["open 장에 걸린 자리 행 빠짐", edit(OPEN, "| digest/alpha.md | C1 | claim | | |\n", ""), "걸린 자리 missing row: | digest/alpha.md | C1 | claim |"],
+  ["decided 장의 reason 이 빔", edit(DECIDED, "| changed | won over 줄을 더했다 |", "| changed | |"), "missing reason"],
+  ["open 장에 걸린 자리 행 빠짐", edit(OPEN, "| digest/alpha.md | C1 | claim | | |\n", ""), "걸린 자리: missing row | digest/alpha.md | C1 | claim |"],
   ["id 에서 안 나오는 걸린 자리 행", edit(OPEN, "| digest/alpha.md | C1 | claim | | |\n", "| digest/alpha.md | C1 | claim | | |\n| digest/beta.md | C2 | claim | | |\n"), "걸린 자리 row not derived from ids: | digest/beta.md | C2 | claim |"],
   // 의견 / 결과 / stance 거울
   ["open 장에 결과 씀", edit(OPEN, "## 결과\n", "## 결과\n\n2026-01-03 gamma#C1 편.\n"), "결과 is written but status is open"],
-  ["decided 장에 의견 없음", edit(DECIDED, "beta#C1 편. 첫 기준에서 갈렸다. 이 fixture 의 쓰임은 새 것이 옛 것을 간다.\n", ""), "decided without 의견"],
-  ["decided 장에 결과 없음", edit(DECIDED, "2026-01-02 beta#C1 편.\n", ""), "decided without 결과"],
-  ["decided 인데 새 쪽 stance 없음", edit("digest/beta.md", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n", ""), "decided but beta#C1 has 0 stance lines naming this page (need 1)"],
-  ["decided 인데 옛 쪽 stance 없음", edit("digest/alpha.md", "  stance: lost to beta#C1 · beta.C1--alpha.C1\n", ""), "decided but alpha#C1 has 0 stance lines naming this page (need 1)"],
+  ["decided 장에 의견 없음", edit(DECIDED, "beta#C1 편. 첫 기준에서 갈렸다. 이 fixture 의 쓰임은 새 것이 옛 것을 간다.\n", ""), "missing 의견 on a decided page"],
+  ["decided 장에 결과 없음", edit(DECIDED, "2026-01-02 beta#C1 편.\n", ""), "missing 결과 on a decided page"],
+  ["open 장에 의견 없음", edit(OPEN, "편을 못 냈다. 이 fixture 의 쓰임은 버리는 때를 말하지 않는다.\n", ""), "missing 의견: an open page says why no side was taken"],
+  ["decided 인데 새 쪽 stance 없음", edit("digest/beta.md", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n", ""), "missing stance line under beta#C1 naming this page"],
+  ["decided 인데 새 쪽 stance 가 둘", edit("digest/beta.md", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n  stance: won over alpha#C1 · beta.C1--alpha.C1\n"), "beta#C1 has 2 stance lines naming this page, not 1"],
+  ["decided 인데 옛 쪽 stance 없음", edit("digest/alpha.md", "  stance: lost to beta#C1 · beta.C1--alpha.C1\n", ""), "missing stance line under alpha#C1 naming this page"],
   ["새 쪽 stance 가 다른 claim 을 가리킴", edit("digest/beta.md", "won over alpha#C1 ·", "won over alpha#C2 ·"), "C1: stance names alpha#C2, page beta.C1--alpha.C1 pairs it with alpha#C1"],
   ["옛 쪽 stance 가 다른 claim 을 가리킴", edit("digest/alpha.md", "lost to beta#C1 ·", "lost to beta#C2 ·"), "C1: stance names beta#C2, page beta.C1--alpha.C1 pairs it with beta#C1"],
   ["양쪽 stance 가 같은 말", edit("digest/alpha.md", "stance: lost to beta#C1", "stance: won over beta#C1"), 'both claims say "won over"; one must be lost to, the other won over'],
@@ -116,7 +124,7 @@ const breaks = [
   ["stance 가 open 장을 가리킴", edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", "  > 옛 기록은 일주일이 지나면 버린다.\n  stance: lost to alpha#C1 · gamma.C1--alpha.C1\n"), "C1: stance names a page that is still open: gamma.C1--alpha.C1"],
   ["stance 의 쌍이 장의 쌍이 아님", edit("digest/alpha.md", "  stance: lost to beta#C1 · beta.C1--alpha.C1\n", "  stance: lost to beta#C1 · beta.C1--alpha.C1\n  stance: lost to gamma#C1 · beta.C1--alpha.C1\n"), "C1: stance pair alpha#C1 / gamma#C1 is not the pair of beta.C1--alpha.C1"],
   // 두 쪽의 앞선 decided 장 줄
-  ["앞선 decided 장의 줄 없음", edit(OPEN, "alpha#C1 은 beta.C1--alpha.C1 에서 lost 편 (2026-01-02)\n", ""), "두 쪽: no line about the earlier decided page beta.C1--alpha.C1"],
+  ["앞선 decided 장의 줄 없음", edit(OPEN, "alpha#C1 은 beta.C1--alpha.C1 에서 lost 편 (2026-01-02)\n", ""), "두 쪽: missing line about the earlier decided page beta.C1--alpha.C1"],
 ];
 
 const printed = new Set(); // 깨뜨림들이 찍은 실패 줄 전부
@@ -137,12 +145,77 @@ for (const [name, mutate, expected] of breaks) {
   }));
 }
 
-// fail(file, `msg ${x}`) → "<file>: msg ..." 에 맞는 정규식. ${...} 자리는 무엇이든 된다
+// step 인자와 --where. 깨뜨림 하나를 두고 이름과 step 으로 걸러지는지 본다.
+const where = (dir, name) => run(dir, "--where", name).out.trim().split("\n");
+
+test("--where: 성한 이름은 다섯 step 이 다 ok", () => withCopy((dir) => {
+  assert.deepEqual(where(dir, "gamma"), ["fetch: ok", "digest: ok", "comparison: ok", "open: ok", "decide: ok"]);
+}));
+
+test("--where: 파일이 하나도 없는 이름은 fetch 가 missing 이고 뒤는 -", () => withCopy((dir) => {
+  assert.deepEqual(where(dir, "zeta"), ["fetch: missing", "digest: -", "comparison: -", "open: -", "decide: -"]);
+}));
+
+test("--where: 덜 한 step 은 missing, 그 뒤는 -", () => withCopy((dir) => {
+  edit("digest/gamma.md", "| beta | unrelated | | 기록은 사람이 검사한다. |\n", "")(dir);
+  assert.deepEqual(where(dir, "gamma"), ["fetch: ok", "digest: ok", "comparison: missing", "open: -", "decide: -"]);
+}));
+
+test("--where: 틀린 step 은 not, 한 step 에 둘이 섞이면 not 이 이긴다", () => withCopy((dir) => {
+  edit("digest/gamma.md", "일주일이 지나면 버린다.", "한 달이 지나면 버린다.")(dir);
+  edit("digest/gamma.md", "- C1: 옛 기록은 일주일 뒤 버린다.\n", "- C1: 옛 기록은 일주일 뒤 버린다.\n- C2: 인용 없는 claim\n")(dir);
+  assert.deepEqual(where(dir, "gamma"), ["fetch: ok", "digest: not", "comparison: -", "open: -", "decide: -"]);
+}));
+
+test("step: 그 step 의 실패만 찍고, 다른 step 은 ok 다", () => withCopy((dir) => {
+  edit("digest/gamma.md", "| beta | unrelated | | 기록은 사람이 검사한다. |\n", "")(dir);
+  const c = run(dir, "comparison", "gamma");
+  assert.equal(c.status, 1);
+  assert.equal(c.err, "digest/: missing Comparison row: beta and gamma were never compared; the later one carries the row\n\n1 failure(s)\n");
+  const d = run(dir, "digest", "gamma");
+  assert.equal(d.status, 0, d.err);
+  assert.equal(d.out, "ok: digest gamma\n");
+}));
+
+test("step: 인자 없는 이름은 다른 이름의 실패를 안 본다", () => withCopy((dir) => {
+  edit("digest/gamma.md", "일주일이 지나면 버린다.", "한 달이 지나면 버린다.")(dir);
+  assert.equal(run(dir, "digest", "alpha").status, 0);
+  assert.equal(run(dir, "digest", "gamma").status, 1);
+}));
+
+test("open: 걸린 자리 행은 장의 두 이름과 그 행의 이름에 다 걸린다", () => withCopy((dir) => {
+  edit(OPEN, "| digest/beta.md | Comparison 행 alpha | conflict C1↔C1 | | |\n", "")(dir);
+  for (const n of ["gamma", "alpha", "beta"]) assert.equal(run(dir, "open", n).status, 1, `open ${n} did not block`);
+}));
+
+test("decide: 장의 실패는 두 쪽 이름에 다 걸리고 stance 줄은 상대 이름에도 걸린다", () => withCopy((dir) => {
+  edit("digest/beta.md", "  stance: won over alpha#C1 · beta.C1--alpha.C1\n", "")(dir);
+  assert.equal(run(dir, "decide", "alpha").status, 1);
+  assert.equal(run(dir, "decide", "beta").status, 1);
+  assert.equal(run(dir, "decide", "gamma").status, 0);
+  edit("digest/gamma.md", "  > 옛 기록은 일주일이 지나면 버린다.\n", "  > 옛 기록은 일주일이 지나면 버린다.\n  stance: lost to alpha#C1 · nope.C1--alpha.C1\n")(dir);
+  assert.equal(run(dir, "decide", "alpha").status, 1);
+  assert.equal(run(dir, "decide", "gamma").status, 1);
+}));
+
+test("이름 없는 step 인자는 usage 를 찍고 exit 2", () => withCopy((dir) => {
+  const r = spawnSync(process.execPath, [check, "digest"], { encoding: "utf8", cwd: dir });
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /^usage: /);
+}));
+
+// fail(step, names, file, `msg ${x}`) 와 splitFront 의 errors.push(`msg`) 의 문구 →
+// "<file>: msg ..." 에 맞는 정규식. ${...} 자리는 무엇이든 된다
 function failMessagePatterns() {
   const src = readFileSync(check, "utf8");
   const out = [];
-  const re = /fail\(\s*(?:`[^`]*`|"[^"]*"|[\w.]+)\s*,\s*(`[^`]*`|"[^"]*")\s*\)/g;
-  for (const m of src.matchAll(re)) {
+  const arg = "(?:\\[[^\\]]*\\]|\\w+\\([^)]*\\)|[^,()]+?)";
+  const lit = "(`[^`]*`|\"[^\"]*\")";
+  const res = [
+    new RegExp(`fail\\(\\s*"\\w+"\\s*,\\s*${arg}\\s*,\\s*(?:\`[^\`]*\`|"[^"]*"|[\\w./]+)\\s*,\\s*${lit}\\s*\\)`, "g"),
+    new RegExp(`errors\\.push\\(\\s*${lit}\\s*\\)`, "g"),
+  ];
+  for (const re of res) for (const m of src.matchAll(re)) {
     const tpl = m[1].slice(1, -1);
     const literal = tpl.split(/\$\{[^}]*\}/).map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(".*?");
     out.push({ tpl, re: new RegExp(`^[^\\n]*?: ${literal}$`) });
@@ -150,9 +223,9 @@ function failMessagePatterns() {
   return out;
 }
 
-test("check.mjs 의 fail 호출마다 깨뜨림이 하나는 있다", () => {
+test("check.mjs 의 실패 문구마다 깨뜨림이 하나는 있다", () => {
   const patterns = failMessagePatterns();
-  assert.ok(patterns.length > 50, `found only ${patterns.length} fail(...) calls; the parser is broken`);
+  assert.ok(patterns.length > 55, `found only ${patterns.length} fail(...) calls; the parser is broken`);
   const lines = [...printed];
   const unhit = patterns.filter((p) => !lines.some((l) => p.re.test(l))).map((p) => p.tpl);
   assert.deepEqual(unhit, [], `no break hits these fail(...) messages:\n  ${unhit.join("\n  ")}`);
